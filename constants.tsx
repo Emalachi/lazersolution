@@ -1,5 +1,5 @@
 
-import { LeadStatus, ProjectType, BudgetRange, Timeline } from './types';
+import { LeadStatus, LeadClassification, ProjectType, BudgetRange, Timeline } from './types';
 
 export const PROJECT_TYPES: ProjectType[] = [
   'Logistics Management',
@@ -41,6 +41,15 @@ export const LEAD_STATUSES: LeadStatus[] = [
   'Closed – Lost'
 ];
 
+export const LEAD_CLASSIFICATIONS: LeadClassification[] = [
+  'None',
+  'Qualified',
+  'Unqualified',
+  'Junk',
+  'Follow Up',
+  'Urgent'
+];
+
 export const STATUS_COLORS: Record<LeadStatus, string> = {
   'New': 'bg-blue-100 text-blue-800',
   'Contacted': 'bg-amber-100 text-amber-800',
@@ -48,4 +57,13 @@ export const STATUS_COLORS: Record<LeadStatus, string> = {
   'Proposal Sent': 'bg-purple-100 text-purple-800',
   'Closed – Won': 'bg-green-100 text-green-800',
   'Closed – Lost': 'bg-rose-100 text-rose-800'
+};
+
+export const CLASSIFICATION_COLORS: Record<LeadClassification, string> = {
+  'None': 'bg-slate-100 text-slate-500',
+  'Qualified': 'bg-emerald-100 text-emerald-700',
+  'Unqualified': 'bg-slate-200 text-slate-600',
+  'Junk': 'bg-rose-100 text-rose-700',
+  'Follow Up': 'bg-amber-100 text-amber-700',
+  'Urgent': 'bg-orange-100 text-orange-700 font-bold'
 };

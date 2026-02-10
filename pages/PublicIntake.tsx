@@ -26,14 +26,14 @@ const PublicIntake: React.FC = () => {
     setFormConfig(config);
 
     // Inject custom header code
-    if (config.headerCode) {
+    if (config.headerCode && config.headerCode !== '<!-- Custom Header Scripts -->') {
       const range = document.createRange();
       const fragment = range.createContextualFragment(config.headerCode);
       document.head.appendChild(fragment);
     }
 
     // Inject custom footer code
-    if (config.footerCode) {
+    if (config.footerCode && config.footerCode !== '<!-- Custom Footer Scripts -->') {
       const range = document.createRange();
       const fragment = range.createContextualFragment(config.footerCode);
       document.body.appendChild(fragment);
@@ -51,8 +51,13 @@ const PublicIntake: React.FC = () => {
     setTimeout(() => {
       addLead(formData);
       setLoading(false);
-      setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      if (formConfig.redirectAfterSuccess && formConfig.successUrl) {
+        window.location.href = formConfig.successUrl;
+      } else {
+        setSubmitted(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }, 1500);
   };
 
@@ -78,27 +83,18 @@ const PublicIntake: React.FC = () => {
               </svg>
               <div className="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-20"></div>
             </div>
-
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-              Thank You, <span className="text-indigo-600">{formData.fullName.split(' ')[0]}!</span>
+              {formConfig.successTitle.replace('[Name]', formData.fullName.split(' ')[0])}
             </h1>
-            
             <p className="text-xl text-slate-600 mb-12 max-w-xl mx-auto leading-relaxed font-medium">
-              Your project request has been successfully submitted. Our team will review your requirements and reach out shortly.
+              {formConfig.successSubtitle}
             </p>
-
             <div className="flex flex-col md:flex-row items-center justify-center gap-4">
               <button 
                 onClick={() => setSubmitted(false)}
                 className="px-10 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100"
               >
-                Submit Another Project
-              </button>
-              <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="px-10 py-4 bg-white border border-slate-200 text-slate-600 font-bold rounded-2xl hover:bg-slate-50 transition-all"
-              >
-                Return to Home
+                {formConfig.successCtaText}
               </button>
             </div>
           </div>
@@ -106,6 +102,8 @@ const PublicIntake: React.FC = () => {
       </div>
     );
   }
+
+  const { fields } = formConfig;
 
   return (
     <div className="min-h-screen bg-white flex flex-col selection:bg-indigo-100 selection:text-indigo-900">
@@ -120,7 +118,7 @@ const PublicIntake: React.FC = () => {
             <span className="text-xl font-bold tracking-tight text-slate-900">Lazer Solutions</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
-            <a href="#problem" className="hover:text-indigo-600 transition-colors">The Challenge</a>
+            <a href="#portfolio" className="hover:text-indigo-600 transition-colors">Portfolio</a>
             <a href="#form" className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-all shadow-md">
               Start Project
             </a>
@@ -128,7 +126,7 @@ const PublicIntake: React.FC = () => {
         </div>
       </header>
 
-      <section id="problem" className="pt-24 pb-20 px-8 bg-slate-50 relative overflow-hidden">
+      <section className="pt-24 pb-20 px-8 bg-slate-50 relative overflow-hidden">
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-8 leading-tight tracking-tight">
             Scaling your business? <br/>
@@ -143,6 +141,29 @@ const PublicIntake: React.FC = () => {
         </div>
       </section>
 
+      {/* PORTFOLIO SECTION */}
+      {formConfig.portfolio && formConfig.portfolio.length > 0 && (
+        <section id="portfolio" className="py-20 bg-white border-y border-slate-50 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-8">
+            <div className="text-center mb-12">
+              <span className="text-xs font-bold text-indigo-600 uppercase tracking-[0.2em] mb-4 block">Our Track Record</span>
+              <h2 className="text-3xl font-extrabold text-slate-900">Projects We've Successfully Powered</h2>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-8 md:gap-16 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
+              {formConfig.portfolio.map((project) => (
+                <div key={project.id} className="flex flex-col items-center group">
+                  <div className="h-16 w-32 flex items-center justify-center transition-transform group-hover:scale-110 duration-500">
+                    <img src={project.imageUrl} alt={project.name} className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">{project.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       <main id="form" className="py-24 px-6 bg-slate-50">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6 uppercase tracking-tight">{formConfig.formTitle}</h2>
@@ -152,55 +173,73 @@ const PublicIntake: React.FC = () => {
         <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-soft">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Full Name *</label>
-                <input required type="text" name="fullName" placeholder="Enter your name" value={formData.fullName} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
-              </div>
-              {formConfig.showCompanyName && (
+              {fields.fullName.isVisible && (
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700">Company Name</label>
-                  <input type="text" name="companyName" placeholder="Your organization" value={formData.companyName} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
+                  <label className="text-sm font-bold text-slate-700">{fields.fullName.label} {fields.fullName.isRequired && '*'}</label>
+                  <input required={fields.fullName.isRequired} type="text" name="fullName" placeholder={fields.fullName.placeholder} value={formData.fullName} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
                 </div>
               )}
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Email Address *</label>
-                <input required type="email" name="email" placeholder="email@example.com" value={formData.email} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Phone *</label>
-                <input required type="tel" name="phone" placeholder="+234..." value={formData.phone} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {formConfig.showProjectType && (
+              {fields.companyName.isVisible && (
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700">Type</label>
-                  <select name="projectType" value={formData.projectType} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-white">
+                  <label className="text-sm font-bold text-slate-700">{fields.companyName.label} {fields.companyName.isRequired && '*'}</label>
+                  <input required={fields.companyName.isRequired} type="text" name="companyName" placeholder={fields.companyName.placeholder} value={formData.companyName} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
+                </div>
+              )}
+              {fields.email.isVisible && (
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700">{fields.email.label} {fields.email.isRequired && '*'}</label>
+                  <input required={fields.email.isRequired} type="email" name="email" placeholder={fields.email.placeholder} value={formData.email} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
+                </div>
+              )}
+              {fields.phone.isVisible && (
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700">{fields.phone.label} {fields.phone.isRequired && '*'}</label>
+                  <input required={fields.phone.isRequired} type="tel" name="phone" placeholder={fields.phone.placeholder} value={formData.phone} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
+                </div>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {fields.projectType.isVisible && (
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700">{fields.projectType.label} {fields.projectType.isRequired && '*'}</label>
+                  <select required={fields.projectType.isRequired} name="projectType" value={formData.projectType} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-white">
                     {PROJECT_TYPES.map(type => <option key={type} value={type}>{type}</option>)}
                   </select>
                 </div>
               )}
-              {formConfig.showBudget && (
+              {fields.budget.isVisible && (
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700">Budget</label>
-                  <select name="budget" value={formData.budget} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-white">
+                  <label className="text-sm font-bold text-slate-700">{fields.budget.label} {fields.budget.isRequired && '*'}</label>
+                  <select required={fields.budget.isRequired} name="budget" value={formData.budget} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-white">
                     {BUDGET_RANGES.map(range => <option key={range} value={range}>{range}</option>)}
                   </select>
                 </div>
               )}
-              {formConfig.showTimeline && (
+              {fields.timeline.isVisible && (
                 <div className="space-y-2">
-                  <label className="text-sm font-bold text-slate-700">Timeline</label>
-                  <select name="timeline" value={formData.timeline} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-white">
+                  <label className="text-sm font-bold text-slate-700">{fields.timeline.label} {fields.timeline.isRequired && '*'}</label>
+                  <select required={fields.timeline.isRequired} name="timeline" value={formData.timeline} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-white">
                     {TIMELINES.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               )}
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700">Project Description *</label>
-              <textarea required name="description" value={formData.description} onChange={handleChange} rows={5} placeholder="Tell us about your requirements..." className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all resize-none"></textarea>
-            </div>
+
+            {fields.source.isVisible && (
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700">{fields.source.label} {fields.source.isRequired && '*'}</label>
+                <input required={fields.source.isRequired} type="text" name="source" placeholder={fields.source.placeholder} value={formData.source} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
+              </div>
+            )}
+
+            {fields.description.isVisible && (
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-slate-700">{fields.description.label} {fields.description.isRequired && '*'}</label>
+                <textarea required={fields.description.isRequired} name="description" value={formData.description} onChange={handleChange} rows={5} placeholder={fields.description.placeholder} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all resize-none"></textarea>
+              </div>
+            )}
+
             <button type="submit" disabled={loading} className={`w-full py-5 rounded-xl text-lg font-bold transition-all ${loading ? 'bg-slate-300 text-slate-500' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-100'}`}>
               {loading ? 'Submitting...' : formConfig.ctaText}
             </button>

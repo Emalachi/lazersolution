@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Lead, LeadStatus } from '../types.ts';
-import { LEAD_STATUSES, STATUS_COLORS } from '../constants.tsx';
+import { Lead, LeadStatus, LeadClassification } from '../types.ts';
+import { LEAD_STATUSES, STATUS_COLORS, LEAD_CLASSIFICATIONS, CLASSIFICATION_COLORS } from '../constants.tsx';
 import { updateLead, addNote, logActivity } from '../services/leadService.ts';
 
 interface LeadDetailsProps {
@@ -13,6 +13,7 @@ interface LeadDetailsProps {
 const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => {
   const [newNote, setNewNote] = useState('');
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isUpdatingClassification, setIsUpdatingClassification] = useState(false);
 
   const handleStatusChange = (newStatus: LeadStatus) => {
     updateLead(lead.id, { status: newStatus });
@@ -20,19 +21,18 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
     onUpdate();
   };
 
+  const handleClassificationChange = (newClassification: LeadClassification) => {
+    updateLead(lead.id, { classification: newClassification });
+    logActivity(lead.id, `Lead marked as ${newClassification}`);
+    onUpdate();
+    setIsUpdatingClassification(false);
+  };
+
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newNote.trim()) return;
     addNote(lead.id, newNote, 'Admin');
     setNewNote('');
-    onUpdate();
-  };
-
-  const handleToggleTag = (tag: string) => {
-    const newTags = lead.tags.includes(tag) 
-      ? lead.tags.filter(t => t !== tag) 
-      : [...lead.tags, tag];
-    updateLead(lead.id, { tags: newTags });
     onUpdate();
   };
 
@@ -56,34 +56,70 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
         <div className="lg:col-span-2 space-y-8">
           <div className="bg-white rounded-3xl shadow-soft border border-slate-200 p-6 lg:p-10">
             <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-10">
-              <div>
-                <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 mb-2 tracking-tight">{lead.fullName}</h1>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">{lead.fullName}</h1>
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${CLASSIFICATION_COLORS[lead.classification || 'None']}`}>
+                    {lead.classification || 'None'}
+                  </span>
+                </div>
                 <p className="text-lg text-slate-500 font-medium">{lead.companyName || 'Individual Project'}</p>
               </div>
-              <div className="relative w-full md:w-auto">
-                <button 
-                  onClick={() => setIsUpdatingStatus(!isUpdatingStatus)}
-                  className={`w-full md:w-auto px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center md:justify-start space-x-3 transition-all ${STATUS_COLORS[lead.status]}`}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                  <span>{lead.status}</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                {isUpdatingStatus && (
-                  <div className="absolute right-0 mt-3 w-full md:w-56 bg-white border border-slate-200 rounded-2xl shadow-2xl z-20 py-2">
-                    {LEAD_STATUSES.map(status => (
-                      <button
-                        key={status}
-                        onClick={() => { handleStatusChange(status); setIsUpdatingStatus(false); }}
-                        className="w-full text-left px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-all"
-                      >
-                        {status}
-                      </button>
-                    ))}
-                  </div>
-                )}
+              
+              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                {/* Status Dropdown */}
+                <div className="relative w-full md:w-auto">
+                  <button 
+                    onClick={() => { setIsUpdatingStatus(!isUpdatingStatus); setIsUpdatingClassification(false); }}
+                    className={`w-full md:w-auto px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-3 transition-all ${STATUS_COLORS[lead.status]}`}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+                    <span>{lead.status}</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isUpdatingStatus && (
+                    <div className="absolute right-0 mt-3 w-full md:w-56 bg-white border border-slate-200 rounded-2xl shadow-2xl z-20 py-2">
+                      {LEAD_STATUSES.map(status => (
+                        <button
+                          key={status}
+                          onClick={() => { handleStatusChange(status); setIsUpdatingStatus(false); }}
+                          className="w-full text-left px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-all"
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Classification Dropdown */}
+                <div className="relative w-full md:w-auto">
+                  <button 
+                    onClick={() => { setIsUpdatingClassification(!isUpdatingClassification); setIsUpdatingStatus(false); }}
+                    className={`w-full md:w-auto px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center space-x-3 transition-all border border-slate-200 hover:border-indigo-600 hover:text-indigo-600`}
+                  >
+                    <span>Classification</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isUpdatingClassification && (
+                    <div className="absolute right-0 mt-3 w-full md:w-56 bg-white border border-slate-200 rounded-2xl shadow-2xl z-20 py-2">
+                      {LEAD_CLASSIFICATIONS.map(cls => (
+                        <button
+                          key={cls}
+                          onClick={() => handleClassificationChange(cls)}
+                          className="w-full text-left px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-all flex items-center justify-between"
+                        >
+                          <span>{cls}</span>
+                          {lead.classification === cls && <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

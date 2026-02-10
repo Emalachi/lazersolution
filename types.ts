@@ -1,6 +1,8 @@
 
 export type LeadStatus = 'New' | 'Contacted' | 'In Discussion' | 'Proposal Sent' | 'Closed – Won' | 'Closed – Lost';
 
+export type LeadClassification = 'None' | 'Qualified' | 'Unqualified' | 'Junk' | 'Follow Up' | 'Urgent';
+
 export type ProjectType = 
   | 'Logistics Management'
   | 'Inventory Management'
@@ -50,6 +52,7 @@ export interface Lead {
   timeline: Timeline;
   source: string;
   status: LeadStatus;
+  classification: LeadClassification;
   assignedTo?: string;
   createdAt: string;
   notes: Note[];
@@ -57,16 +60,44 @@ export interface Lead {
   tags: string[];
 }
 
+export interface FieldConfig {
+  label: string;
+  placeholder: string;
+  isVisible: boolean;
+  isRequired: boolean;
+}
+
+export interface ProjectLogo {
+  id: string;
+  name: string;
+  imageUrl: string;
+}
+
 export interface FormConfig {
-  showCompanyName: boolean;
-  showBudget: boolean;
-  showTimeline: boolean;
-  showProjectType: boolean;
   formTitle: string;
   formSubtitle: string;
   ctaText: string;
-  headerCode?: string;
-  footerCode?: string;
+  successTitle: string;
+  successSubtitle: string;
+  successCtaText: string;
+  redirectAfterSuccess: boolean;
+  successUrl: string;
+  headerCode: string;
+  footerCode: string;
+  cloudinaryCloudName: string;
+  cloudinaryUploadPreset: string;
+  portfolio: ProjectLogo[];
+  fields: {
+    fullName: FieldConfig;
+    companyName: FieldConfig;
+    email: FieldConfig;
+    phone: FieldConfig;
+    projectType: FieldConfig;
+    budget: FieldConfig;
+    timeline: FieldConfig;
+    description: FieldConfig;
+    source: FieldConfig;
+  };
 }
 
 export interface AuthUser {

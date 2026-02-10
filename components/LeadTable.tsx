@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Lead } from '../types';
-import { STATUS_COLORS } from '../constants';
+import { STATUS_COLORS, CLASSIFICATION_COLORS } from '../constants';
 
 interface LeadTableProps {
   leads: Lead[];
@@ -18,7 +18,8 @@ const LeadTable: React.FC<LeadTableProps> = ({ leads, onSelectLead }) => {
             <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Project Type</th>
             <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Budget</th>
             <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Status</th>
-            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Date Submitted</th>
+            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Classification</th>
+            <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Date</th>
             <th className="px-6 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
           </tr>
         </thead>
@@ -36,8 +37,13 @@ const LeadTable: React.FC<LeadTableProps> = ({ leads, onSelectLead }) => {
                 {lead.budget}
               </td>
               <td className="px-6 py-5">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-tight ${STATUS_COLORS[lead.status]}`}>
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-tight ${STATUS_COLORS[lead.status]}`}>
                   {lead.status}
+                </span>
+              </td>
+              <td className="px-6 py-5">
+                <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase ${CLASSIFICATION_COLORS[lead.classification || 'None']}`}>
+                  {lead.classification || 'None'}
                 </span>
               </td>
               <td className="px-6 py-5 text-sm text-slate-500">
@@ -48,14 +54,14 @@ const LeadTable: React.FC<LeadTableProps> = ({ leads, onSelectLead }) => {
                   className="text-indigo-600 hover:text-indigo-900 font-bold text-sm transition-colors"
                   onClick={(e) => { e.stopPropagation(); onSelectLead(lead); }}
                 >
-                  Manage Lead
+                  Manage
                 </button>
               </td>
             </tr>
           ))}
           {leads.length === 0 && (
             <tr>
-              <td colSpan={6} className="px-6 py-20 text-center text-slate-400 font-medium">
+              <td colSpan={7} className="px-6 py-20 text-center text-slate-400 font-medium">
                 No lead records found in the database.
               </td>
             </tr>

@@ -10,13 +10,13 @@ const INITIAL_DATA: Lead[] = [
     companyName: 'TechCorp',
     email: 'john@techcorp.com',
     phone: '+234 800 123 4567',
-    // Fix: Changed 'Mobile App' to 'Logistics Management' to match ProjectType union
     projectType: 'Logistics Management',
     description: 'Looking for a grocery delivery app for Lagos market.',
     budget: '₦1m+',
     timeline: '1–3 months',
     source: 'Google Ads',
     status: 'New',
+    classification: 'Qualified',
     assignedTo: 'Admin',
     createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
     notes: [],
@@ -28,13 +28,13 @@ const INITIAL_DATA: Lead[] = [
     fullName: 'Sara Smith',
     email: 'sara@example.com',
     phone: '+234 811 000 1111',
-    // Fix: Changed 'Website' to 'Other' to match ProjectType union
     projectType: 'Other',
     description: 'Need a professional portfolio website.',
     budget: '₦100k–₦300k',
     timeline: 'Flexible',
     source: 'Referral',
     status: 'Contacted',
+    classification: 'Follow Up',
     assignedTo: 'Sales Team',
     createdAt: new Date(Date.now() - 86400000).toISOString(),
     notes: [{ id: 'n1', content: 'Sent initial WhatsApp message.', author: 'Admin', createdAt: new Date().toISOString() }],
@@ -56,12 +56,13 @@ export const saveLeads = (leads: Lead[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
 };
 
-export const addLead = (lead: Omit<Lead, 'id' | 'status' | 'createdAt' | 'notes' | 'activity' | 'tags'>): Lead => {
+export const addLead = (lead: Omit<Lead, 'id' | 'status' | 'createdAt' | 'notes' | 'activity' | 'tags' | 'classification'>): Lead => {
   const leads = getLeads();
   const newLead: Lead = {
     ...lead,
     id: Math.random().toString(36).substr(2, 9),
     status: 'New',
+    classification: 'None',
     createdAt: new Date().toISOString(),
     notes: [],
     activity: [{ id: Math.random().toString(), description: 'Project request submitted', timestamp: new Date().toISOString() }],
