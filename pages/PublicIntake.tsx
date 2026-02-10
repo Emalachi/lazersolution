@@ -126,46 +126,235 @@ const PublicIntake: React.FC = () => {
             <span className="text-xl font-bold tracking-tight text-slate-900">Lazer Solutions</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
-            <a href="#portfolio" className="hover:text-indigo-600 transition-colors">Portfolio</a>
-            <a href="#form" className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-all shadow-md">Start Project</a>
+            <a href="#services" className="hover:text-indigo-600 transition-colors">What We Build</a>
+            <a href="#imagine" className="hover:text-indigo-600 transition-colors">Our Vision</a>
+            <a href="#form" className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-all shadow-md">Get Started</a>
           </nav>
         </div>
       </header>
-      <section className="pt-24 pb-20 px-8 bg-slate-50 relative overflow-hidden">
+
+      {/* HERO SECTION */}
+      <section className="pt-24 pb-20 px-8 bg-slate-50 relative overflow-hidden border-b border-slate-100">
         <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-widest">
+            Custom Software & Automation
+          </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-8 leading-tight tracking-tight">
             Scaling your business? <br/><span className="text-indigo-600">We build the engine.</span>
           </h1>
-          <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">Custom software that adapts to your workflow, not the other way around.</p>
-          <a href="#form" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-xl shadow-indigo-100 text-lg inline-block">Get Started</a>
+          <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
+            Custom software that adapts to your workflow, not the other way around. Modernize your operations with smart, automated systems.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="#form" className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-xl shadow-indigo-100 text-lg">Tell Us About Your Project</a>
+            <a href="#problem" className="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 font-bold py-4 px-10 rounded-xl hover:bg-slate-50 transition-all text-lg">Learn How We Help</a>
+          </div>
         </div>
       </section>
-      {formConfig.portfolio && formConfig.portfolio.length > 0 && (
-        <section id="portfolio" className="py-20 bg-white border-y border-slate-50 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-8">
-            <div className="text-center mb-12">
-              <span className="text-xs font-bold text-indigo-600 uppercase tracking-[0.2em] mb-4 block">Our Track Record</span>
-              <h2 className="text-3xl font-extrabold text-slate-900">Projects We've Successfully Powered</h2>
-            </div>
-            <div className="flex flex-wrap justify-center gap-8 md:gap-16 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
-              {formConfig.portfolio.map((project) => (
-                <div key={project.id} className="flex flex-col items-center group">
-                  <div className="h-16 w-32 flex items-center justify-center transition-transform group-hover:scale-110 duration-500">
-                    <img src={project.imageUrl} alt={project.name} className="max-h-full max-w-full object-contain" />
+
+      {/* PROBLEM SECTION (PAS Framework) */}
+      <section id="problem" className="py-24 px-8 bg-slate-900 text-white overflow-hidden relative">
+        <div className="absolute top-0 right-0 p-10 opacity-5">
+           <svg className="w-96 h-96" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+        </div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">
+            Most businesses don’t fail because <br className="hidden md:block" />
+            they lack customers.
+          </h2>
+          <p className="text-xl md:text-2xl text-slate-400 mb-12 font-medium">
+            They struggle because their processes are <span className="text-rose-400">slow, manual, and disconnected.</span>
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-2xl mx-auto">
+             {[
+               { title: "Chaos", desc: "Orders are handled in different places." },
+               { title: "Manual", desc: "Inventory is tracked manually." },
+               { title: "Risk", desc: "Follow-ups depend on memory." },
+               { title: "Waste", desc: "Reports take hours to prepare." }
+             ].map((item, i) => (
+               <div key={i} className="flex items-start space-x-4 p-5 rounded-2xl bg-white/5 border border-white/10">
+                 <div className="text-rose-400 mt-1">
+                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                 </div>
+                 <div>
+                   <h4 className="font-bold text-slate-100 text-sm mb-1">{item.title}</h4>
+                   <p className="text-slate-400 text-sm leading-relaxed">{item.desc}</p>
+                 </div>
+               </div>
+             ))}
+          </div>
+
+          <div className="mt-16 pt-16 border-t border-white/10">
+            <p className="text-lg md:text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto italic">
+              "Growth becomes chaotic, stressful, and expensive. If your business feels busy but inefficient, the problem isn’t effort — it’s the lack of smart systems and automation."
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* SOLUTION / INTEREST SECTION */}
+      <section className="py-24 px-8 bg-white">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+          <div className="lg:w-1/2">
+            <span className="text-xs font-bold text-indigo-600 uppercase tracking-[0.2em] mb-4 block">The Lazer Advantage</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-8 leading-tight">
+              We don’t just build applications. <br/> We build <span className="text-indigo-600">intelligent systems.</span>
+            </h2>
+            <p className="text-lg text-slate-600 leading-relaxed mb-8">
+              Lazer Solutions Limited designs and develops custom software and automation solutions that help businesses operate faster, smarter, and more profitably.
+            </p>
+            <p className="text-lg text-slate-600 leading-relaxed">
+              Our systems automate repetitive tasks, connect departments, and give you real-time visibility across your entire operations from one central hub.
+            </p>
+          </div>
+          <div className="lg:w-1/2 grid grid-cols-2 gap-4">
+             <div className="bg-indigo-600 rounded-3xl p-8 text-white shadow-2xl shadow-indigo-200">
+                <div className="text-3xl font-black mb-2">Automate</div>
+                <p className="text-indigo-100 text-sm">Eliminate repetitive manual entry.</p>
+             </div>
+             <div className="bg-slate-900 rounded-3xl p-8 text-white mt-8">
+                <div className="text-3xl font-black mb-2">Connect</div>
+                <p className="text-slate-400 text-sm">Every department on one sync.</p>
+             </div>
+             <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 -mt-8">
+                <div className="text-3xl font-black text-slate-900 mb-2">Scale</div>
+                <p className="text-slate-500 text-sm">Built to grow with your volume.</p>
+             </div>
+             <div className="bg-indigo-50 rounded-3xl p-8 border border-indigo-100">
+                <div className="text-3xl font-black text-indigo-600 mb-2">Visibility</div>
+                <p className="text-indigo-500 text-sm">Real-time data insights.</p>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHAT WE BUILD SECTION */}
+      <section id="services" className="py-24 px-8 bg-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">What We Build</h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">Every solution is tailored to your workflow and built to scale as your business grows.</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { title: "Logistics", desc: "Delivery management software for fleet operations.", icon: "🚚" },
+              { title: "Inventory", desc: "Warehouse management (WMS) systems.", icon: "📦" },
+              { title: "Custom CRM", desc: "E-commerce and client relationship management.", icon: "💎" },
+              { title: "Tracking", desc: "Real-time shipment tracking websites.", icon: "📍" },
+              { title: "Marketplaces", desc: "Trading platforms and online marketplaces.", icon: "🌐" },
+              { title: "ERP", desc: "Enterprise Resource Planning for SMEs.", icon: "⚙️" },
+              { title: "OMS", desc: "Order management and payment-on-delivery platforms.", icon: "💳" },
+              { title: "Automation", desc: "Custom tools and internal workflow engines.", icon: "⚡" },
+              { title: "BI Systems", desc: "Internal dashboards and business intelligence.", icon: "📊" }
+            ].map((service, i) => (
+              <div key={i} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-soft hover:shadow-xl hover:border-indigo-100 transition-all group">
+                <div className="text-4xl mb-6 grayscale group-hover:grayscale-0 transition-all">{service.icon}</div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed">{service.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* DESIRE SECTION - THE TRANSFORMATION */}
+      <section id="imagine" className="py-24 px-8 bg-indigo-600 text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <h2 className="text-3xl md:text-5xl font-extrabold mb-8 leading-tight">
+              Imagine a business where...
+            </h2>
+            <div className="space-y-6">
+              {[
+                "Orders automatically move through workflows",
+                "Inventory updates itself across all channels",
+                "Leads are followed up automatically",
+                "Sales and operations teams work from one dashboard",
+                "Reports are generated instantly",
+                "Manual errors are drastically reduced"
+              ].map((text, i) => (
+                <div key={i} className="flex items-center space-x-4">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center border border-indigo-400">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg>
                   </div>
-                  <span className="text-[10px] font-bold text-slate-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">{project.name}</span>
+                  <span className="text-lg md:text-xl font-medium text-indigo-50">{text}</span>
                 </div>
               ))}
             </div>
           </div>
-        </section>
-      )}
+          <div className="bg-white/10 backdrop-blur-xl rounded-[2.5rem] p-10 md:p-16 border border-white/20">
+             <p className="text-xl md:text-2xl font-bold mb-8 leading-relaxed">
+               "Our clients don’t just get software — they get connected systems that think, respond, and scale with their business."
+             </p>
+             <div className="flex items-center space-x-4">
+                <div className="h-0.5 w-12 bg-indigo-300"></div>
+                <span className="text-indigo-200 font-bold uppercase tracking-widest text-xs">Lazer Solutions Limited</span>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TRUSTED / INDUSTRIES SECTION */}
+      <section className="py-24 px-8 bg-white border-b border-slate-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 block">Trusted by Growing Businesses</span>
+            <h2 className="text-3xl font-extrabold text-slate-900">Industries We’ve Powered</h2>
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-4">
+             {[
+               "Logistics & Dispatch", "E-commerce Brands", "Health & Diagnostic", "Trading & Distribution", "Digital Agencies"
+             ].map((industry, i) => (
+               <div key={i} className="px-8 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-slate-700 font-bold hover:bg-white hover:border-indigo-600 hover:text-indigo-600 transition-all cursor-default">
+                 {industry}
+               </div>
+             ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-24">
+            {[
+              { quote: "The automation Lazer Solutions built for us eliminated manual follow-ups and improved our delivery turnaround time.", author: "Operations Manager, Logistics Company" },
+              { quote: "Our CRM now handles tasks automatically. Sales no longer chase data — the system does the work.", author: "Founder, E-commerce Brand" },
+              { quote: "Their custom automation tools helped us scale without increasing staff.", author: "CEO, Service-Based Company" },
+              { quote: "This feels like enterprise-level software built specifically for our business.", author: "Head of Operations, Trading Company" }
+            ].map((testimonial, i) => (
+              <div key={i} className="p-10 rounded-[2.5rem] bg-slate-50 border border-slate-100 relative group">
+                <div className="text-4xl text-indigo-200 absolute top-8 left-8 opacity-50">“</div>
+                <p className="text-lg text-slate-700 font-medium mb-8 leading-relaxed relative z-10 italic">
+                  {testimonial.quote}
+                </p>
+                <div className="flex items-center space-x-3">
+                  <div className="w-1 h-8 bg-indigo-600"></div>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{testimonial.author}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FORM SECTION (THE ACTION) */}
       <main id="form" className="py-24 px-6 bg-slate-50">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6 uppercase tracking-tight">{formConfig.formTitle}</h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto">{formConfig.formSubtitle}</p>
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-xl shadow-indigo-200">
+               👉
+            </div>
+          </div>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Ready to modernize?</h2>
+          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
+            {formConfig.formSubtitle}
+          </p>
         </div>
-        <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-soft">
+        
+        <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-[2.5rem] border border-slate-200 shadow-2xl shadow-slate-200/50 relative">
+          <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.3em] px-6 py-2 rounded-full shadow-lg">
+            Project Intake Form
+          </div>
+          
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {fields.fullName.isVisible && (
@@ -232,11 +421,32 @@ const PublicIntake: React.FC = () => {
               </div>
             )}
             <button type="submit" disabled={loading} className={`w-full py-5 rounded-xl text-lg font-bold transition-all ${loading ? 'bg-slate-300 text-slate-500' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-100'}`}>
-              {loading ? 'Submitting...' : formConfig.ctaText}
+              {loading ? 'Submitting...' : "Initiate My Project Engine"}
             </button>
           </form>
         </div>
       </main>
+
+      <footer className="bg-slate-900 py-16 px-8 text-white border-t border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="bg-indigo-600 p-2 rounded-lg text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              </div>
+              <span className="text-xl font-bold tracking-tight">Lazer Solutions</span>
+            </div>
+            <p className="text-slate-500 text-sm max-w-xs leading-relaxed">Custom software. Smart automation. Built around your business.</p>
+          </div>
+          <div className="flex flex-col items-center md:items-end text-center md:text-right">
+             <div className="text-slate-400 text-sm mb-2 font-bold uppercase tracking-widest">Connect With Us</div>
+             <a href="mailto:contact@lazersolutions.com" className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">contact@lazersolutions.com</a>
+          </div>
+        </div>
+        <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 text-center text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em]">
+          &copy; {new Date().getFullYear()} Lazer Solutions Limited. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 };
