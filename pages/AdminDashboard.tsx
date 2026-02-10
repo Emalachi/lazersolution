@@ -7,7 +7,8 @@ import { getVisitLogs } from '../services/analyticsService.ts';
 import LeadTable from '../components/LeadTable.tsx';
 import LeadDetails from './LeadDetails.tsx';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, LineChart, Line } from 'recharts';
-import { STATUS_COLORS } from '../constants.tsx';
+/* Fix: Added LEAD_STATUSES to the import list from constants */
+import { STATUS_COLORS, LEAD_STATUSES } from '../constants.tsx';
 
 interface AdminDashboardProps {
   viewMode?: 'dashboard' | 'leads' | 'settings' | 'analytics';
@@ -61,7 +62,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ viewMode = 'dashboard' 
   }, [visitorLogs]);
 
   const trafficData = useMemo(() => {
-    // Group by day for the last 7 days
     const days: any = {};
     const now = new Date();
     for (let i = 6; i >= 0; i--) {
@@ -274,17 +274,84 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ viewMode = 'dashboard' 
                   </div>
                 </section>
                 <section className="space-y-4">
-                  <h3 className="text-sm font-bold text-slate-900 border-b border-slate-50 pb-2">Success Page</h3>
+                  <h3 className="text-sm font-bold text-slate-900 border-b border-slate-50 pb-2">Success (Thank You) Page</h3>
                   <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 mb-6">
                     <label className="flex items-center justify-between cursor-pointer">
                       <div className="space-y-0.5"><span className="text-sm font-bold text-indigo-900">Use Custom Redirect URL</span></div>
                       <input type="checkbox" checked={formConfig.redirectAfterSuccess} onChange={(e) => setFormConfig({...formConfig, redirectAfterSuccess: e.target.checked})} className="w-5 h-5 rounded border-indigo-300 text-indigo-600 focus:ring-indigo-500" />
                     </label>
                     {formConfig.redirectAfterSuccess && (
-                      <div className="mt-4"><input type="url" value={formConfig.successUrl} onChange={(e) => setFormConfig({...formConfig, successUrl: e.target.value})} placeholder="https://..." className="w-full px-4 py-2 text-sm rounded-lg border border-indigo-200" /></div>
+                      <div className="mt-4"><input type="url" value={formConfig.successUrl} onChange={(e) => setFormConfig({...formConfig, successUrl: e.target.value})} placeholder="https://..." className="w-full px-4 py-2 text-sm rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 outline-none bg-white" /></div>
                     )}
                   </div>
+                  {!formConfig.redirectAfterSuccess && (
+                    <div className="space-y-4">
+                      <div className="space-y-1"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Success Title</label><input type="text" value={formConfig.successTitle} onChange={(e) => setFormConfig({...formConfig, successTitle: e.target.value})} className="w-full px-4 py-2 text-sm rounded-lg border border-slate-200 outline-none" /></div>
+                      <div className="space-y-1"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Success Subtitle</label><textarea value={formConfig.successSubtitle} onChange={(e) => setFormConfig({...formConfig, successSubtitle: e.target.value})} rows={3} className="w-full px-4 py-2 text-sm rounded-lg border border-slate-200 outline-none resize-none" /></div>
+                    </div>
+                  )}
                 </section>
+              </div>
+            )}
+            {activeSettingsTab === 'fields' && (
+              <div className="bg-white p-6 lg:p-8 rounded-3xl border border-slate-200 shadow-soft space-y-6">
+                <h3 className="text-sm font-bold text-slate-900 border-b border-slate-50 pb-2">Field Customization</h3>
+                <div className="space-y-8">
+                  {(Object.entries(formConfig.fields) as [keyof FormConfig['fields'], FieldConfig][]).map(([key, field]) => (
+                    <div key={key} className="p-4 rounded-2xl border border-slate-100 bg-slate-50/50 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-extrabold text-slate-900 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
+                        <div className="flex items-center space-x-4">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" checked={field.isVisible} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, isVisible: e.target.checked}}})} className="w-4 h-4 rounded text-indigo-600" />
+                            <span className="text-[10px] font-bold text-slate-500 uppercase">Visible</span>
+                          </label>
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" checked={field.isRequired} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, isRequired: e.target.checked}}})} className="w-4 h-4 rounded text-indigo-600" />
+                            <span className="text-[10px] font-bold text-slate-500 uppercase">Required</span>
+                          </label>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Label Text</label>
+                          <input type="text" value={field.label} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, label: e.target.value}}})} className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Placeholder</label>
+                          <input type="text" value={field.placeholder} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, placeholder: e.target.value}}})} className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-200" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {activeSettingsTab === 'scripts' && (
+              <div className="bg-white p-6 lg:p-8 rounded-3xl border border-slate-200 shadow-soft space-y-6">
+                <h3 className="text-sm font-bold text-slate-900 border-b border-slate-50 pb-2">Custom Injection Code</h3>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Header Code (Runs in &lt;head&gt;)</label>
+                    <textarea 
+                      value={formConfig.headerCode} 
+                      onChange={(e) => setFormConfig({...formConfig, headerCode: e.target.value})} 
+                      rows={8} 
+                      className="w-full px-4 py-3 text-xs font-mono rounded-lg border border-slate-200 bg-slate-900 text-slate-300 resize-none"
+                      placeholder="<!-- Paste Google Analytics, Meta Pixel, or CSS here -->"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Footer Code (Runs at bottom of &lt;body&gt;)</label>
+                    <textarea 
+                      value={formConfig.footerCode} 
+                      onChange={(e) => setFormConfig({...formConfig, footerCode: e.target.value})} 
+                      rows={8} 
+                      className="w-full px-4 py-3 text-xs font-mono rounded-lg border border-slate-200 bg-slate-900 text-slate-300 resize-none"
+                      placeholder="<!-- Paste chat widgets or final tracking scripts here -->"
+                    />
+                  </div>
+                </div>
               </div>
             )}
             {activeSettingsTab === 'assets' && (
@@ -296,8 +363,30 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ viewMode = 'dashboard' 
                     <div className="space-y-1"><label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Upload Preset</label><input type="text" value={formConfig.cloudinaryUploadPreset} onChange={(e) => setFormConfig({...formConfig, cloudinaryUploadPreset: e.target.value})} className="w-full px-4 py-2 text-sm rounded-lg border border-slate-200 outline-none" placeholder="e.g. public_intake_preset" /></div>
                   </div>
                 </section>
+                <section className="space-y-6">
+                  <h3 className="text-sm font-bold text-slate-900 border-b border-slate-50 pb-2">Completed Projects Portfolio</h3>
+                  <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Project / Client Name</label>
+                      <input type="text" value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} className="w-full px-4 py-2 text-sm rounded-lg border border-slate-200 bg-white" placeholder="e.g. TechCorp Nigeria" />
+                    </div>
+                    <div className="relative">
+                      <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" id="portfolio-upload" disabled={isUploading} />
+                      <label htmlFor="portfolio-upload" className={`flex flex-col items-center justify-center border-2 border-dashed border-slate-200 rounded-xl p-8 cursor-pointer hover:bg-white hover:border-indigo-300 transition-all ${isUploading ? 'opacity-50' : ''}`}>
+                        {isUploading ? <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div> : <span>Click to upload project logo</span>}
+                      </label>
+                    </div>
+                  </div>
+                </section>
               </div>
             )}
+          </div>
+          <div className="space-y-6">
+            <div className="bg-slate-900 p-8 rounded-3xl text-white shadow-xl shadow-slate-200">
+               <h3 className="text-lg font-bold mb-4">Integrations Guide</h3>
+               <p className="text-slate-400 text-sm mb-6 leading-relaxed">Use Cloudinary for image hosting and the Script Builder for tracking tags like GTM or Meta Pixel.</p>
+               <a href="https://cloudinary.com/console" target="_blank" rel="noreferrer" className="text-xs font-bold text-indigo-400 hover:text-indigo-300">Set up Cloudinary →</a>
+            </div>
           </div>
         </div>
       </div>
@@ -332,7 +421,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ viewMode = 'dashboard' 
           <input type="text" placeholder="Filter by name, email, project..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="flex-grow pl-4 pr-4 py-3 rounded-2xl border border-slate-100 bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium" />
           <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="px-4 py-3 rounded-2xl border border-slate-100 bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-bold text-slate-700">
             <option value="All">All Statuses</option>
-            {['New', 'Contacted', 'In Discussion', 'Proposal Sent', 'Closed – Won', 'Closed – Lost'].map(s => <option key={s} value={s}>{s}</option>)}
+            {LEAD_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
         </div>
         <LeadTable leads={filteredLeads} onSelectLead={setSelectedLead} />
