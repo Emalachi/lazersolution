@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { Lead, FormConfig } from '../types.ts';
 import { getLeads } from '../services/leadService.ts';
@@ -193,7 +192,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ viewMode = 'dashboard' 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
-            {viewMode === 'dashboard' ? 'Overview' : 'Leads Archive'}
+            {viewMode === 'dashboard' ? 'Overview' : 'Leads Database'}
           </h1>
           <p className="text-slate-500 text-sm">
             {viewMode === 'dashboard' ? "Today's performance snapshots." : "Every request captured at-a-glance."}
