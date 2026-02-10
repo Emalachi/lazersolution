@@ -127,6 +127,7 @@ const PublicIntake: React.FC = () => {
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
             <a href="#services" className="hover:text-indigo-600 transition-colors">What We Build</a>
+            <a href="#ecommerce" className="hover:text-indigo-600 transition-colors">E-commerce CRM</a>
             <a href="#imagine" className="hover:text-indigo-600 transition-colors">Our Vision</a>
             <a href="#form" className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-all shadow-md">Get Started</a>
           </nav>
@@ -259,6 +260,117 @@ const PublicIntake: React.FC = () => {
         </div>
       </section>
 
+      {/* E-COMMERCE CRM DEEP DIVE SECTION */}
+      <section id="ecommerce" className="py-24 px-8 bg-white border-y border-slate-50 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-16 mb-20">
+            <div className="lg:w-1/2">
+              <span className="text-xs font-bold text-indigo-600 uppercase tracking-[0.2em] mb-4 block">Specialized Solution</span>
+              <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-8 leading-tight">
+                CRMs Built for <span className="text-indigo-600">High-Scale E-commerce</span>
+              </h2>
+              <p className="text-lg text-slate-600 leading-relaxed mb-6">
+                At Lazer Solutions Limited, we build custom CRM systems specifically designed for e-commerce companies that sell at scale.
+              </p>
+              <p className="text-lg text-slate-600 leading-relaxed italic border-l-4 border-indigo-600 pl-6 py-2 bg-indigo-50/50 rounded-r-2xl">
+                Unlike generic CRMs that stop at contact management, our e-commerce CRMs are built to handle the full order lifecycle — from lead capture and order confirmation to delivery, payment reconciliation, and repeat purchases.
+              </p>
+            </div>
+            <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-4">
+               {[
+                 { title: "Full Visibility", desc: "Centralize all customer and order data in one dashboard." },
+                 { title: "Lifecycle Tracking", desc: "Track orders from creation to delivery and closure." },
+                 { title: "Omnichannel", desc: "Manage call-center and WhatsApp sales workflows." },
+                 { title: "Automation", desc: "Automate follow-ups, reminders, and status updates." }
+               ].map((feature, i) => (
+                 <div key={i} className="p-6 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-between">
+                    <h4 className="font-bold text-slate-900 mb-2">{feature.title}</h4>
+                    <p className="text-slate-500 text-xs leading-relaxed">{feature.desc}</p>
+                 </div>
+               ))}
+            </div>
+          </div>
+
+          <div className="bg-slate-900 rounded-[2.5rem] p-8 md:p-16 text-white overflow-hidden relative shadow-2xl">
+            <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
+               <svg className="w-64 h-64" fill="currentColor" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            </div>
+            
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-black mb-12 text-center">Built for Real E-commerce Operations</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {[
+                  { title: "POD Power", desc: "Payment-on-Delivery (POD) management & reconciliation." },
+                  { title: "WhatsApp Sales", desc: "Seamless tools for WhatsApp-driven sales teams." },
+                  { title: "Call-Center Ops", desc: "Confirmation queues for call-center agents." },
+                  { title: "Team Scaling", desc: "Multi-agent sales and operations team control." }
+                ].map((item, i) => (
+                  <div key={i} className="space-y-4">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center font-bold text-lg">{i+1}</div>
+                    <h5 className="font-bold text-slate-100">{item.title}</h5>
+                    <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-12 pt-12 border-t border-white/10 text-center">
+                <p className="text-indigo-400 font-bold">We design systems that improve conversion rates, accountability, and operational efficiency — not just data storage.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-16">
+            <div className="bg-slate-50 rounded-3xl p-10 border border-slate-200">
+               <h3 className="text-xl font-bold text-slate-900 mb-8 flex items-center space-x-3">
+                 <span className="text-2xl">⚡</span>
+                 <span>Custom Automation Included</span>
+               </h3>
+               <ul className="space-y-4">
+                 {[
+                   "Automatic order status transitions",
+                   "Follow-up reminders for agents",
+                   "Escalation alerts for delayed deliveries",
+                   "Auto-generated performance reports",
+                   "Smart tagging and lead scoring"
+                 ].map((li, i) => (
+                   <li key={i} className="flex items-center space-x-3 text-slate-700 font-medium">
+                     <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                     <span>{li}</span>
+                   </li>
+                 ))}
+               </ul>
+               <p className="mt-8 text-sm text-slate-500 italic">The result is a CRM that works with your team, not against them.</p>
+            </div>
+
+            <div className="flex flex-col justify-center">
+               <h3 className="text-2xl font-bold text-slate-900 mb-6">Built to Scale</h3>
+               <div className="space-y-8">
+                 <div className="flex items-start space-x-6">
+                    <div className="p-3 rounded-xl bg-indigo-600 text-white shrink-0 shadow-lg">🚀</div>
+                    <div>
+                      <h4 className="font-bold text-slate-900">High Volume Ready</h4>
+                      <p className="text-slate-500 text-sm">Scalable as your order volume grows from hundreds to thousands daily.</p>
+                    </div>
+                 </div>
+                 <div className="flex items-start space-x-6">
+                    <div className="p-3 rounded-xl bg-slate-900 text-white shrink-0 shadow-lg">👥</div>
+                    <div>
+                      <h4 className="font-bold text-slate-900">Role-Based Access</h4>
+                      <p className="text-slate-500 text-sm">Distinct interfaces for Admin, Sales, Operations, and Logistics.</p>
+                    </div>
+                 </div>
+                 <div className="flex items-start space-x-6">
+                    <div className="p-3 rounded-xl bg-indigo-100 text-indigo-600 shrink-0 shadow-lg">🔐</div>
+                    <div>
+                      <h4 className="font-bold text-slate-900">Full Ownership</h4>
+                      <p className="text-slate-500 text-sm">Fully owned by you — no monthly SaaS lock-in or per-user fees.</p>
+                    </div>
+                 </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* DESIRE SECTION - THE TRANSFORMATION */}
       <section id="imagine" className="py-24 px-8 bg-indigo-600 text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -346,7 +458,7 @@ const PublicIntake: React.FC = () => {
           </div>
           <h2 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Ready to modernize?</h2>
           <p className="text-slate-600 text-lg max-w-2xl mx-auto">
-            {formConfig.formSubtitle}
+            Tell us about your project. Describe your business challenges, and our team will design a custom software and automation solution around them.
           </p>
         </div>
         
