@@ -1,0 +1,65 @@
+
+export type LeadStatus = 'New' | 'Contacted' | 'In Discussion' | 'Proposal Sent' | 'Closed – Won' | 'Closed – Lost';
+
+export type ProjectType = 
+  | 'Logistics Management'
+  | 'Inventory Management'
+  | 'E-commerce CRM'
+  | 'Shipment & Tracking'
+  | 'Trading & Marketplaces'
+  | 'ERP for SMEs'
+  | 'Custom CRM'
+  | 'Warehouse Management (WMS)'
+  | 'Payment-on-Delivery (POD)'
+  | 'Order Management (OMS)'
+  | 'Vendor & Supplier Portals'
+  | 'Subscription & Membership'
+  | 'Automation & Internal Tools'
+  | 'Admin Dashboards'
+  | 'Real Estate Lead Management'
+  | 'Other';
+
+export type BudgetRange = '₦100k–₦300k' | '₦300k–₦1m' | '₦1m+';
+
+export type Timeline = 'ASAP' | '1–3 months' | 'Flexible';
+
+export type UserRole = 'Super Admin' | 'Sales Staff';
+
+export interface Note {
+  id: string;
+  content: string;
+  author: string;
+  createdAt: string;
+}
+
+export interface Activity {
+  id: string;
+  description: string;
+  timestamp: string;
+}
+
+export interface Lead {
+  id: string;
+  fullName: string;
+  companyName?: string;
+  email: string;
+  phone: string;
+  projectType: ProjectType;
+  description: string;
+  budget: BudgetRange;
+  timeline: Timeline;
+  source: string;
+  status: LeadStatus;
+  assignedTo?: string;
+  createdAt: string;
+  notes: Note[];
+  activity: Activity[];
+  tags: string[];
+}
+
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+}
