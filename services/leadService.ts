@@ -1,5 +1,6 @@
 
-import { Lead, LeadStatus, Note, Activity } from '../types';
+import { Lead, LeadStatus, Note, Activity, LeadMetadata } from '../types';
+import { getVisitorMetadata } from './analyticsService';
 
 const STORAGE_KEY = 'lazer_solutions_leads';
 
@@ -21,25 +22,16 @@ const INITIAL_DATA: Lead[] = [
     createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
     notes: [],
     activity: [{ id: 'a1', description: 'Lead submitted via website', timestamp: new Date().toISOString() }],
-    tags: ['Hot Lead']
-  },
-  {
-    id: '2',
-    fullName: 'Sara Smith',
-    email: 'sara@example.com',
-    phone: '+234 811 000 1111',
-    projectType: 'Other',
-    description: 'Need a professional portfolio website.',
-    budget: '₦100k–₦300k',
-    timeline: 'Flexible',
-    source: 'Referral',
-    status: 'Contacted',
-    classification: 'Follow Up',
-    assignedTo: 'Sales Team',
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-    notes: [{ id: 'n1', content: 'Sent initial WhatsApp message.', author: 'Admin', createdAt: new Date().toISOString() }],
-    activity: [{ id: 'a2', description: 'Contacted client via WhatsApp', timestamp: new Date().toISOString() }],
-    tags: ['Warm Lead']
+    tags: ['Hot Lead'],
+    metadata: {
+      ip: '192.168.1.1',
+      userAgent: 'Mozilla/5.0...',
+      deviceType: 'Desktop',
+      browser: 'Chrome',
+      os: 'MacOS',
+      referrer: 'google.com',
+      screenResolution: '1920x1080'
+    }
   }
 ];
 
@@ -56,8 +48,9 @@ export const saveLeads = (leads: Lead[]) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
 };
 
-export const addLead = (lead: Omit<Lead, 'id' | 'status' | 'createdAt' | 'notes' | 'activity' | 'tags' | 'classification'>): Lead => {
+export const addLead = async (lead: Omit<Lead, 'id' | 'status' | 'createdAt' | 'notes' | 'activity' | 'tags' | 'classification' | 'metadata'>): Promise<Lead> => {
   const leads = getLeads();
+  const metadata = await getVisitorMetadata();
   const newLead: Lead = {
     ...lead,
     id: Math.random().toString(36).substr(2, 9),
@@ -66,7 +59,8 @@ export const addLead = (lead: Omit<Lead, 'id' | 'status' | 'createdAt' | 'notes'
     createdAt: new Date().toISOString(),
     notes: [],
     activity: [{ id: Math.random().toString(), description: 'Project request submitted', timestamp: new Date().toISOString() }],
-    tags: []
+    tags: [],
+    metadata
   };
   leads.unshift(newLead);
   saveLeads(leads);

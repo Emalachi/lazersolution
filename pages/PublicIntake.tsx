@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { addLead } from '../services/leadService.ts';
 import { getFormConfig } from '../services/configService.ts';
+import { logVisit } from '../services/analyticsService.ts';
 import { PROJECT_TYPES, BUDGET_RANGES, TIMELINES } from '../constants.tsx';
 import { ProjectType, BudgetRange, Timeline, FormConfig } from '../types.ts';
 
@@ -24,6 +25,9 @@ const PublicIntake: React.FC = () => {
   useEffect(() => {
     const config = getFormConfig();
     setFormConfig(config);
+
+    // Analytics: Log initial visit
+    logVisit(window.location.pathname + window.location.hash);
 
     // Inject custom header code
     if (config.headerCode && config.headerCode !== '<!-- Custom Header Scripts -->') {
@@ -48,8 +52,8 @@ const PublicIntake: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     
-    setTimeout(() => {
-      addLead(formData);
+    try {
+      await addLead(formData);
       setLoading(false);
       
       if (formConfig.redirectAfterSuccess && formConfig.successUrl) {
@@ -58,7 +62,10 @@ const PublicIntake: React.FC = () => {
         setSubmitted(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-    }, 1500);
+    } catch (err) {
+      setLoading(false);
+      alert('Error submitting form. Please try again.');
+    }
   };
 
   if (submitted) {

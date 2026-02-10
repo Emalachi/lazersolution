@@ -67,7 +67,6 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
               </div>
               
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                {/* Status Dropdown */}
                 <div className="relative w-full md:w-auto">
                   <button 
                     onClick={() => { setIsUpdatingStatus(!isUpdatingStatus); setIsUpdatingClassification(false); }}
@@ -94,7 +93,6 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
                   )}
                 </div>
 
-                {/* Classification Dropdown */}
                 <div className="relative w-full md:w-auto">
                   <button 
                     onClick={() => { setIsUpdatingClassification(!isUpdatingClassification); setIsUpdatingStatus(false); }}
@@ -121,18 +119,6 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
                   )}
                 </div>
               </div>
-            </div>
-
-            {/* QUICK ACTIONS FOR MOBILE/TABLET */}
-            <div className="grid grid-cols-2 gap-4 mb-8 lg:hidden">
-              <a href={`tel:${lead.phone}`} className="flex items-center justify-center space-x-2 py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 005.47 5.47l.773-1.548a1 1 0 011.06-.539l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
-                <span>Call Now</span>
-              </a>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center space-x-2 py-4 bg-emerald-600 text-white rounded-2xl font-bold text-sm">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.246 2.248 3.484 5.232 3.483 8.412-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.308 1.656zm6.29-4.171c1.589.945 3.554 1.443 5.548 1.444 5.405 0 9.803-4.398 9.806-9.805.002-2.625-1.022-5.09-2.871-6.941-1.85-1.849-4.312-2.87-6.937-2.872-5.407 0-9.805 4.398-9.808 9.806-.001 2.088.521 4.124 1.512 5.885l-.965 3.525 3.609-.947zm11.045-6.502c-.313-.156-1.853-.914-2.144-1.018-.291-.104-.503-.156-.714.156-.212.313-.819 1.018-1.004 1.227-.185.209-.37.234-.683.078-.313-.156-1.321-.487-2.516-1.553-.929-.829-1.556-1.853-1.738-2.166-.182-.313-.02-.482.137-.638.141-.141.313-.365.469-.547.156-.182.209-.313.313-.521.104-.209.052-.391-.026-.547-.078-.156-.714-1.72-1.004-2.424-.291-.704-.567-.638-.714-.646-.141-.008-.344-.01-.547-.01s-.547.078-.832.391c-.286.313-1.093 1.068-1.093 2.604 0 1.536 1.117 3.021 1.272 3.23.156.209 2.193 3.35 5.312 4.697.742.32 1.32.511 1.77.653.745.236 1.423.203 1.959.123.597-.089 1.853-.758 2.118-1.458.265-.704.265-1.302.185-1.432-.079-.129-.291-.208-.603-.364z"/></svg>
-                <span>WhatsApp</span>
-              </a>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-10 border-y border-slate-50 py-10">
@@ -164,12 +150,44 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 mb-10">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Project Requirements</label>
               <div className="text-slate-700 leading-relaxed bg-slate-50 p-6 rounded-2xl border border-slate-100 font-medium whitespace-pre-wrap">
                 {lead.description}
               </div>
             </div>
+
+            {/* ANALYTICS SECTION */}
+            {lead.metadata && (
+              <div className="bg-slate-900 rounded-2xl p-6 text-white overflow-hidden relative">
+                <div className="absolute top-0 right-0 p-4 opacity-5">
+                  <svg className="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clipRule="evenodd" /></svg>
+                </div>
+                <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-[0.2em] mb-4">Visitor Analytics & Fingerprinting</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold mb-1">IP Address</div>
+                    <div className="text-sm font-mono">{lead.metadata.ip}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold mb-1">Device / OS</div>
+                    <div className="text-sm">{lead.metadata.deviceType} • {lead.metadata.os}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold mb-1">Browser</div>
+                    <div className="text-sm">{lead.metadata.browser}</div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-slate-400 uppercase font-bold mb-1">Referrer</div>
+                    <div className="text-sm truncate" title={lead.metadata.referrer}>{lead.metadata.referrer}</div>
+                  </div>
+                </div>
+                <div className="mt-6 pt-4 border-t border-white/10">
+                  <div className="text-[10px] text-slate-400 uppercase font-bold mb-1">Web User Agent</div>
+                  <div className="text-[10px] font-mono opacity-60 leading-tight break-all">{lead.metadata.userAgent}</div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bg-white rounded-3xl shadow-soft border border-slate-200 p-6 lg:p-10">

@@ -40,6 +40,16 @@ export interface Activity {
   timestamp: string;
 }
 
+export interface LeadMetadata {
+  ip: string;
+  userAgent: string;
+  deviceType: 'Desktop' | 'Mobile' | 'Tablet';
+  browser: string;
+  os: string;
+  referrer: string;
+  screenResolution: string;
+}
+
 export interface Lead {
   id: string;
   fullName: string;
@@ -58,6 +68,15 @@ export interface Lead {
   notes: Note[];
   activity: Activity[];
   tags: string[];
+  metadata?: LeadMetadata;
+}
+
+export interface VisitorLog {
+  id: string;
+  timestamp: string;
+  path: string;
+  metadata: LeadMetadata;
+  duration?: number; // seconds spent
 }
 
 export interface FieldConfig {
