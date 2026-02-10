@@ -1,110 +1,67 @@
 
-import { Lead, LeadStatus, Note, Activity, LeadMetadata } from '../types';
+import { Lead, LeadStatus, LeadMetadata } from '../types';
 import { getVisitorMetadata } from './analyticsService';
+import { db } from './firebase';
+import { collection, addDoc, getDocs, updateDoc, doc, query, orderBy, serverTimestamp, Timestamp } from 'firebase/firestore';
 
-const STORAGE_KEY = 'lazer_solutions_leads';
+const LEADS_COLLECTION = 'leads';
 
-const INITIAL_DATA: Lead[] = [
-  {
-    id: '1',
-    fullName: 'John Doe',
-    companyName: 'TechCorp',
-    email: 'john@techcorp.com',
-    phone: '+234 800 123 4567',
-    projectType: 'Logistics Management',
-    description: 'Looking for a grocery delivery app for Lagos market.',
-    budget: '₦1m+',
-    timeline: '1–3 months',
-    source: 'Google Ads',
-    status: 'New',
-    classification: 'Qualified',
-    assignedTo: 'Admin',
-    createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-    notes: [],
-    activity: [{ id: 'a1', description: 'Lead submitted via website', timestamp: new Date().toISOString() }],
-    tags: ['Hot Lead'],
-    metadata: {
-      ip: '192.168.1.1',
-      userAgent: 'Mozilla/5.0...',
-      deviceType: 'Desktop',
-      browser: 'Chrome',
-      os: 'MacOS',
-      referrer: 'google.com',
-      screenResolution: '1920x1080'
-    }
-  }
-];
-
-export const getLeads = (): Lead[] => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DATA));
-    return INITIAL_DATA;
-  }
-  return JSON.parse(data);
+export const getLeads = async (): Promise<Lead[]> => {
+  const q = query(collection(db, LEADS_COLLECTION), orderBy('createdAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(d => ({
+    id: d.id,
+    ...d.data(),
+    createdAt: (d.data().createdAt as Timestamp)?.toDate().toISOString() || new Date().toISOString()
+  } as Lead));
 };
 
-export const saveLeads = (leads: Lead[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
-};
-
-export const addLead = async (lead: Omit<Lead, 'id' | 'status' | 'createdAt' | 'notes' | 'activity' | 'tags' | 'classification' | 'metadata'>): Promise<Lead> => {
-  const leads = getLeads();
+export const addLead = async (lead: Omit<Lead, 'id' | 'status' | 'createdAt' | 'notes' | 'activity' | 'tags' | 'classification' | 'metadata'>): Promise<string> => {
   const metadata = await getVisitorMetadata();
-  const newLead: Lead = {
+  const docRef = await addDoc(collection(db, LEADS_COLLECTION), {
     ...lead,
-    id: Math.random().toString(36).substr(2, 9),
     status: 'New',
     classification: 'None',
-    createdAt: new Date().toISOString(),
+    createdAt: serverTimestamp(),
     notes: [],
     activity: [{ id: Math.random().toString(), description: 'Project request submitted', timestamp: new Date().toISOString() }],
     tags: [],
     metadata
+  });
+  return docRef.id;
+};
+
+export const updateLead = async (id: string, updates: Partial<Lead>) => {
+  const leadDoc = doc(db, LEADS_COLLECTION, id);
+  await updateDoc(leadDoc, updates);
+};
+
+export const addNote = async (leadId: string, content: string, author: string, existingNotes: any[], existingActivity: any[]) => {
+  const newNote = {
+    id: Math.random().toString(),
+    content,
+    author,
+    createdAt: new Date().toISOString()
   };
-  leads.unshift(newLead);
-  saveLeads(leads);
-  return newLead;
+  const newActivity = {
+    id: Math.random().toString(),
+    description: `Note added by ${author}`,
+    timestamp: new Date().toISOString()
+  };
+  
+  await updateLead(leadId, {
+    notes: [newNote, ...existingNotes],
+    activity: [newActivity, ...existingActivity]
+  });
 };
 
-export const updateLead = (id: string, updates: Partial<Lead>) => {
-  const leads = getLeads();
-  const index = leads.findIndex(l => l.id === id);
-  if (index !== -1) {
-    leads[index] = { ...leads[index], ...updates };
-    saveLeads(leads);
-  }
-};
-
-export const addNote = (leadId: string, content: string, author: string) => {
-  const leads = getLeads();
-  const lead = leads.find(l => l.id === leadId);
-  if (lead) {
-    const newNote: Note = {
-      id: Math.random().toString(),
-      content,
-      author,
-      createdAt: new Date().toISOString()
-    };
-    lead.notes.unshift(newNote);
-    lead.activity.unshift({
-      id: Math.random().toString(),
-      description: `Note added by ${author}`,
-      timestamp: new Date().toISOString()
-    });
-    saveLeads(leads);
-  }
-};
-
-export const logActivity = (leadId: string, description: string) => {
-  const leads = getLeads();
-  const lead = leads.find(l => l.id === leadId);
-  if (lead) {
-    lead.activity.unshift({
-      id: Math.random().toString(),
-      description,
-      timestamp: new Date().toISOString()
-    });
-    saveLeads(leads);
-  }
+export const logActivity = async (leadId: string, description: string, existingActivity: any[]) => {
+  const newActivity = {
+    id: Math.random().toString(),
+    description,
+    timestamp: new Date().toISOString()
+  };
+  await updateLead(leadId, {
+    activity: [newActivity, ...existingActivity]
+  });
 };

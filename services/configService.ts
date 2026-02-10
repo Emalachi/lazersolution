@@ -1,7 +1,9 @@
 
 import { FormConfig } from '../types';
+import { db } from './firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-const CONFIG_KEY = 'lazer_solutions_form_config_v2';
+const CONFIG_DOC_PATH = 'config/main';
 
 const DEFAULT_CONFIG: FormConfig = {
   formTitle: 'Ready to build a system that actually works?',
@@ -30,11 +32,20 @@ const DEFAULT_CONFIG: FormConfig = {
   }
 };
 
-export const getFormConfig = (): FormConfig => {
-  const data = localStorage.getItem(CONFIG_KEY);
-  return data ? JSON.parse(data) : DEFAULT_CONFIG;
+export const getFormConfig = async (): Promise<FormConfig> => {
+  try {
+    const docRef = doc(db, CONFIG_DOC_PATH);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { ...DEFAULT_CONFIG, ...docSnap.data() } as FormConfig;
+    }
+  } catch (error) {
+    console.error("Error fetching config from Firestore:", error);
+  }
+  return DEFAULT_CONFIG;
 };
 
-export const saveFormConfig = (config: FormConfig) => {
-  localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+export const saveFormConfig = async (config: FormConfig) => {
+  const docRef = doc(db, CONFIG_DOC_PATH);
+  await setDoc(docRef, config);
 };

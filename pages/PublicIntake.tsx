@@ -9,7 +9,7 @@ import { ProjectType, BudgetRange, Timeline, FormConfig } from '../types.ts';
 const PublicIntake: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formConfig, setFormConfig] = useState<FormConfig>(getFormConfig());
+  const [formConfig, setFormConfig] = useState<FormConfig | null>(null);
   const [formData, setFormData] = useState({
     fullName: '',
     companyName: '',
@@ -22,44 +22,33 @@ const PublicIntake: React.FC = () => {
     source: ''
   });
 
-  // Helper function to inject HTML and execute scripts
   const injectCode = (html: string, isHeader: boolean) => {
     if (!html || html.trim() === '' || html.startsWith('<!--')) return;
-    
     const target = isHeader ? document.head : document.body;
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
-    
     Array.from(tempDiv.childNodes).forEach((node) => {
       if (node.nodeName === 'SCRIPT') {
         const scriptNode = node as HTMLScriptElement;
         const newScript = document.createElement('script');
-        
-        // Copy all attributes
-        Array.from(scriptNode.attributes).forEach(attr => {
-          newScript.setAttribute(attr.name, attr.value);
-        });
-        
-        // Copy inner script content
+        Array.from(scriptNode.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
         newScript.appendChild(document.createTextNode(scriptNode.innerHTML));
         target.appendChild(newScript);
       } else {
-        // For non-script nodes (styles, links, html), just append
         target.appendChild(node.cloneNode(true));
       }
     });
   };
 
   useEffect(() => {
-    const config = getFormConfig();
-    setFormConfig(config);
-
-    // Analytics: Log initial visit
-    logVisit(window.location.pathname + window.location.hash);
-
-    // Inject custom header and footer code correctly
-    injectCode(config.headerCode, true);
-    injectCode(config.footerCode, false);
+    const initialize = async () => {
+      const config = await getFormConfig();
+      setFormConfig(config);
+      logVisit(window.location.pathname + window.location.hash);
+      injectCode(config.headerCode, true);
+      injectCode(config.footerCode, false);
+    };
+    initialize();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -69,12 +58,10 @@ const PublicIntake: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
     try {
       await addLead(formData);
       setLoading(false);
-      
-      if (formConfig.redirectAfterSuccess && formConfig.successUrl) {
+      if (formConfig?.redirectAfterSuccess && formConfig.successUrl) {
         window.location.href = formConfig.successUrl;
       } else {
         setSubmitted(true);
@@ -82,9 +69,17 @@ const PublicIntake: React.FC = () => {
       }
     } catch (err) {
       setLoading(false);
-      alert('Error submitting form. Please check your connection and try again.');
+      alert('Error submitting form. Please try again.');
     }
   };
+
+  if (!formConfig) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -99,29 +94,19 @@ const PublicIntake: React.FC = () => {
             <span className="text-xl font-bold tracking-tight text-slate-900">Lazer Solutions</span>
           </div>
         </header>
-
         <main className="flex-grow flex items-center justify-center p-8">
           <div className="max-w-3xl w-full bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl shadow-slate-200/50 p-10 md:p-16 text-center animate-in zoom-in-95 duration-500">
             <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 mx-auto mb-10 border border-indigo-100 relative">
-              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-              </svg>
+              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
               <div className="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-20"></div>
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
               {formConfig.successTitle.replace('[Name]', formData.fullName.split(' ')[0])}
             </h1>
-            <p className="text-xl text-slate-600 mb-12 max-w-xl mx-auto leading-relaxed font-medium">
-              {formConfig.successSubtitle}
-            </p>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-              <button 
-                onClick={() => setSubmitted(false)}
-                className="px-10 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100"
-              >
-                {formConfig.successCtaText}
-              </button>
-            </div>
+            <p className="text-xl text-slate-600 mb-12 max-w-xl mx-auto leading-relaxed font-medium">{formConfig.successSubtitle}</p>
+            <button onClick={() => setSubmitted(false)} className="px-10 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100">
+              {formConfig.successCtaText}
+            </button>
           </div>
         </main>
       </div>
@@ -136,37 +121,25 @@ const PublicIntake: React.FC = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className="bg-indigo-600 p-2 rounded-lg text-white">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900">Lazer Solutions</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-sm font-semibold text-slate-600">
             <a href="#portfolio" className="hover:text-indigo-600 transition-colors">Portfolio</a>
-            <a href="#form" className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-all shadow-md">
-              Start Project
-            </a>
+            <a href="#form" className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg hover:bg-indigo-700 transition-all shadow-md">Start Project</a>
           </nav>
         </div>
       </header>
-
       <section className="pt-24 pb-20 px-8 bg-slate-50 relative overflow-hidden">
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-8 leading-tight tracking-tight">
-            Scaling your business? <br/>
-            <span className="text-indigo-600">We build the engine.</span>
+            Scaling your business? <br/><span className="text-indigo-600">We build the engine.</span>
           </h1>
-          <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">
-            Custom software that adapts to your workflow, not the other way around.
-          </p>
-          <a href="#form" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-xl shadow-indigo-100 text-lg inline-block">
-            Get Started
-          </a>
+          <p className="text-xl text-slate-600 leading-relaxed mb-12 max-w-3xl mx-auto">Custom software that adapts to your workflow, not the other way around.</p>
+          <a href="#form" className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-xl transition-all shadow-xl shadow-indigo-100 text-lg inline-block">Get Started</a>
         </div>
       </section>
-
-      {/* PORTFOLIO SECTION */}
       {formConfig.portfolio && formConfig.portfolio.length > 0 && (
         <section id="portfolio" className="py-20 bg-white border-y border-slate-50 overflow-hidden">
           <div className="max-w-7xl mx-auto px-8">
@@ -174,7 +147,6 @@ const PublicIntake: React.FC = () => {
               <span className="text-xs font-bold text-indigo-600 uppercase tracking-[0.2em] mb-4 block">Our Track Record</span>
               <h2 className="text-3xl font-extrabold text-slate-900">Projects We've Successfully Powered</h2>
             </div>
-            
             <div className="flex flex-wrap justify-center gap-8 md:gap-16 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
               {formConfig.portfolio.map((project) => (
                 <div key={project.id} className="flex flex-col items-center group">
@@ -188,13 +160,11 @@ const PublicIntake: React.FC = () => {
           </div>
         </section>
       )}
-
       <main id="form" className="py-24 px-6 bg-slate-50">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 mb-6 uppercase tracking-tight">{formConfig.formTitle}</h2>
           <p className="text-slate-600 text-lg max-w-2xl mx-auto">{formConfig.formSubtitle}</p>
         </div>
-        
         <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-3xl border border-slate-200 shadow-soft">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -223,7 +193,6 @@ const PublicIntake: React.FC = () => {
                 </div>
               )}
             </div>
-            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {fields.projectType.isVisible && (
                 <div className="space-y-2">
@@ -250,21 +219,18 @@ const PublicIntake: React.FC = () => {
                 </div>
               )}
             </div>
-
             {fields.source.isVisible && (
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700">{fields.source.label} {fields.source.isRequired && '*'}</label>
                 <input required={fields.source.isRequired} type="text" name="source" placeholder={fields.source.placeholder} value={formData.source} onChange={handleChange} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all" />
               </div>
             )}
-
             {fields.description.isVisible && (
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700">{fields.description.label} {fields.description.isRequired && '*'}</label>
                 <textarea required={fields.description.isRequired} name="description" value={formData.description} onChange={handleChange} rows={5} placeholder={fields.description.placeholder} className="w-full px-5 py-3.5 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition-all resize-none"></textarea>
               </div>
             )}
-
             <button type="submit" disabled={loading} className={`w-full py-5 rounded-xl text-lg font-bold transition-all ${loading ? 'bg-slate-300 text-slate-500' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-xl shadow-indigo-100'}`}>
               {loading ? 'Submitting...' : formConfig.ctaText}
             </button>

@@ -17,13 +17,15 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
 
   const handleStatusChange = (newStatus: LeadStatus) => {
     updateLead(lead.id, { status: newStatus });
-    logActivity(lead.id, `Lead status updated to ${newStatus}`);
+    // Fix: logActivity expects 3 arguments, providing the current activity array as the 3rd argument.
+    logActivity(lead.id, `Lead status updated to ${newStatus}`, lead.activity);
     onUpdate();
   };
 
   const handleClassificationChange = (newClassification: LeadClassification) => {
     updateLead(lead.id, { classification: newClassification });
-    logActivity(lead.id, `Lead marked as ${newClassification}`);
+    // Fix: logActivity expects 3 arguments, providing the current activity array as the 3rd argument.
+    logActivity(lead.id, `Lead marked as ${newClassification}`, lead.activity);
     onUpdate();
     setIsUpdatingClassification(false);
   };
@@ -31,7 +33,8 @@ const LeadDetails: React.FC<LeadDetailsProps> = ({ lead, onBack, onUpdate }) => 
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newNote.trim()) return;
-    addNote(lead.id, newNote, 'Admin');
+    // Fix: addNote expects 5 arguments, providing current notes and activity as the last two arguments.
+    addNote(lead.id, newNote, 'Admin', lead.notes, lead.activity);
     setNewNote('');
     onUpdate();
   };

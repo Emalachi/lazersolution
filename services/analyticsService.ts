@@ -1,16 +1,14 @@
 
 import { VisitorLog, LeadMetadata } from '../types';
+import { db } from './firebase';
+import { collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 
-const VISITOR_KEY = 'lazer_solutions_visitor_logs';
+const LOGS_COLLECTION = 'visitor_logs';
 
 export const getDeviceType = (): 'Desktop' | 'Mobile' | 'Tablet' => {
   const ua = navigator.userAgent;
-  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-    return 'Tablet';
-  }
-  if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-    return 'Mobile';
-  }
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return 'Tablet';
+  if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return 'Mobile';
   return 'Desktop';
 };
 
@@ -40,9 +38,7 @@ export const fetchIp = async (): Promise<string> => {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
     return data.ip || 'Unknown';
-  } catch {
-    return 'Unknown';
-  }
+  } catch { return 'Unknown'; }
 };
 
 export const getVisitorMetadata = async (): Promise<LeadMetadata> => {
@@ -60,19 +56,24 @@ export const getVisitorMetadata = async (): Promise<LeadMetadata> => {
 };
 
 export const logVisit = async (path: string) => {
-  const logs: VisitorLog[] = JSON.parse(localStorage.getItem(VISITOR_KEY) || '[]');
-  const metadata = await getVisitorMetadata();
-  const newVisit: VisitorLog = {
-    id: Math.random().toString(36).substr(2, 9),
-    timestamp: new Date().toISOString(),
-    path,
-    metadata
-  };
-  logs.push(newVisit);
-  // Keep only last 1000 logs for performance
-  localStorage.setItem(VISITOR_KEY, JSON.stringify(logs.slice(-1000)));
+  try {
+    const metadata = await getVisitorMetadata();
+    await addDoc(collection(db, LOGS_COLLECTION), {
+      timestamp: serverTimestamp(),
+      path,
+      metadata
+    });
+  } catch (error) {
+    console.error("Error logging visit:", error);
+  }
 };
 
-export const getVisitLogs = (): VisitorLog[] => {
-  return JSON.parse(localStorage.getItem(VISITOR_KEY) || '[]');
+export const getVisitLogs = async (): Promise<VisitorLog[]> => {
+  const q = query(collection(db, LOGS_COLLECTION), orderBy('timestamp', 'desc'), limit(100));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(d => ({
+    id: d.id,
+    ...d.data(),
+    timestamp: (d.data().timestamp as any)?.toDate().toISOString() || new Date().toISOString()
+  } as VisitorLog));
 };
