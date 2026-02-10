@@ -5,7 +5,7 @@ import AdminDashboard from './pages/AdminDashboard.tsx';
 import PublicIntake from './pages/PublicIntake.tsx';
 import Login from './pages/Login.tsx';
 
-type AppMode = 'public' | 'admin';
+type AppMode = 'public' | 'admin' | 'success';
 type AdminView = 'dashboard' | 'leads' | 'settings' | 'analytics';
 
 const App: React.FC = () => {
@@ -19,6 +19,8 @@ const App: React.FC = () => {
       const hash = window.location.hash;
       if (hash.startsWith('#admin')) {
         setMode('admin');
+      } else if (hash.startsWith('#success')) {
+        setMode('success');
       } else {
         setMode('public');
       }
@@ -27,6 +29,11 @@ const App: React.FC = () => {
     window.addEventListener('hashchange', handleHash);
     return () => window.removeEventListener('hashchange', handleHash);
   }, []);
+
+  // Handle Success View (The Thank You Page)
+  if (mode === 'success') {
+    return <PublicIntake forceSuccessView={true} />;
+  }
 
   if (mode === 'public') {
     return <PublicIntake />;

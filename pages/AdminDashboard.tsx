@@ -256,13 +256,24 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ viewMode = 'dashboard' 
                   </div>
                 </section>
                 <section className="space-y-4">
-                  <h3 className="text-sm font-bold text-slate-900 border-b border-slate-50 pb-2">Success (Thank You) Page</h3>
+                  <div className="flex items-center justify-between border-b border-slate-50 pb-2">
+                    <h3 className="text-sm font-bold text-slate-900">Success (Thank You) Page</h3>
+                    <button 
+                      onClick={() => window.open('#success', '_blank')}
+                      className="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full hover:bg-indigo-100 transition-colors"
+                    >
+                      Preview Page URL
+                    </button>
+                  </div>
                   <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 mb-6">
                     <label className="flex items-center justify-between cursor-pointer">
-                      <div className="space-y-0.5"><span className="text-sm font-bold text-indigo-900">Use Custom Redirect URL</span></div>
-                      <input type="checkbox" checked={formConfig.redirectAfterSuccess} onChange={(e) => setFormConfig({...formConfig, redirectAfterSuccess: e.target.checked})} className="w-5 h-5 rounded" />
+                      <div className="space-y-0.5">
+                        <span className="text-sm font-bold text-indigo-900">Use External Redirect URL</span>
+                        <p className="text-[10px] text-indigo-400">If disabled, the internal #success page will be used.</p>
+                      </div>
+                      <input type="checkbox" checked={formConfig.redirectAfterSuccess} onChange={(e) => setFormConfig({...formConfig, redirectAfterSuccess: e.target.checked})} className="w-5 h-5 rounded text-indigo-600" />
                     </label>
-                    {formConfig.redirectAfterSuccess && (<div className="mt-4"><input type="url" value={formConfig.successUrl} onChange={(e) => setFormConfig({...formConfig, successUrl: e.target.value})} placeholder="https://..." className="w-full px-4 py-2 text-sm rounded-lg border border-indigo-200" /></div>)}
+                    {formConfig.redirectAfterSuccess && (<div className="mt-4"><input type="url" value={formConfig.successUrl} onChange={(e) => setFormConfig({...formConfig, successUrl: e.target.value})} placeholder="https://..." className="w-full px-4 py-2 text-sm rounded-lg border border-indigo-200 outline-none" /></div>)}
                   </div>
                   {!formConfig.redirectAfterSuccess && (
                     <div className="space-y-4">
@@ -283,10 +294,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ viewMode = 'dashboard' 
                         <span className="text-sm font-extrabold text-slate-900 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
                         <div className="flex items-center space-x-4">
                           <label className="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" checked={field.isVisible} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, isVisible: e.target.checked}}})} className="w-4 h-4 rounded" /><span className="text-[10px] font-bold text-slate-500 uppercase">Visible</span>
+                            <input type="checkbox" checked={field.isVisible} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, isVisible: e.target.checked}}})} className="w-4 h-4 rounded text-indigo-600" /><span className="text-[10px] font-bold text-slate-500 uppercase">Visible</span>
                           </label>
                           <label className="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" checked={field.isRequired} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, isRequired: e.target.checked}}})} className="w-4 h-4 rounded" /><span className="text-[10px] font-bold text-slate-500 uppercase">Required</span>
+                            <input type="checkbox" checked={field.isRequired} onChange={(e) => setFormConfig({...formConfig, fields: {...formConfig.fields, [key]: {...field, isRequired: e.target.checked}}})} className="w-4 h-4 rounded text-indigo-600" /><span className="text-[10px] font-bold text-slate-500 uppercase">Required</span>
                           </label>
                         </div>
                       </div>

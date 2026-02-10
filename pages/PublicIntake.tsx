@@ -6,8 +6,12 @@ import { logVisit } from '../services/analyticsService.ts';
 import { PROJECT_TYPES, BUDGET_RANGES, TIMELINES } from '../constants.tsx';
 import { ProjectType, BudgetRange, Timeline, FormConfig } from '../types.ts';
 
-const PublicIntake: React.FC = () => {
-  const [submitted, setSubmitted] = useState(false);
+interface PublicIntakeProps {
+  forceSuccessView?: boolean;
+}
+
+const PublicIntake: React.FC<PublicIntakeProps> = ({ forceSuccessView = false }) => {
+  const [submitted, setSubmitted] = useState(forceSuccessView);
   const [loading, setLoading] = useState(false);
   const [formConfig, setFormConfig] = useState<FormConfig | null>(null);
   const [formData, setFormData] = useState({
@@ -51,6 +55,11 @@ const PublicIntake: React.FC = () => {
     initialize();
   }, []);
 
+  // Update internal state if prop changes
+  useEffect(() => {
+    setSubmitted(forceSuccessView);
+  }, [forceSuccessView]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -64,8 +73,7 @@ const PublicIntake: React.FC = () => {
       if (formConfig?.redirectAfterSuccess && formConfig.successUrl) {
         window.location.href = formConfig.successUrl;
       } else {
-        setSubmitted(true);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.location.hash = 'success';
       }
     } catch (err) {
       setLoading(false);
@@ -101,10 +109,10 @@ const PublicIntake: React.FC = () => {
               <div className="absolute inset-0 bg-indigo-400 rounded-full animate-ping opacity-20"></div>
             </div>
             <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
-              {formConfig.successTitle.replace('[Name]', formData.fullName.split(' ')[0])}
+              {formConfig.successTitle.replace('[Name]', formData.fullName ? formData.fullName.split(' ')[0] : 'Partner')}
             </h1>
             <p className="text-xl text-slate-600 mb-12 max-w-xl mx-auto leading-relaxed font-medium">{formConfig.successSubtitle}</p>
-            <button onClick={() => setSubmitted(false)} className="px-10 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100">
+            <button onClick={() => window.location.hash = ''} className="px-10 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100">
               {formConfig.successCtaText}
             </button>
           </div>
