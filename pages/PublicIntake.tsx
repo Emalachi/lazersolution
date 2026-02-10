@@ -27,18 +27,57 @@ const PublicIntake: React.FC<PublicIntakeProps> = ({ forceSuccessView = false })
   });
 
   const injectCode = (html: string, isHeader: boolean) => {
-    if (!html || html.trim() === '' || html.startsWith('<!--')) return;
+    // Only skip if truly empty or just whitespace
+    if (!html || html.trim() === '') return;
+    
+    // Skip if it's just the default placeholder comments and nothing else
+    const trimmed = html.trim();
+    if (trimmed === '<!-- Custom Header Scripts -->' || trimmed === '<!-- Custom Footer Scripts -->') return;
+
     const target = isHeader ? document.head : document.body;
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
+
     Array.from(tempDiv.childNodes).forEach((node) => {
+      // Handle Scripts specifically to ensure execution
       if (node.nodeName === 'SCRIPT') {
         const scriptNode = node as HTMLScriptElement;
         const newScript = document.createElement('script');
-        Array.from(scriptNode.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        newScript.appendChild(document.createTextNode(scriptNode.innerHTML));
+        
+        // Copy all attributes (src, async, defer, etc)
+        Array.from(scriptNode.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+        
+        // Mark for identification in Inspector
+        newScript.setAttribute('data-lazer-injected', 'true');
+        
+        // Set content
+        if (scriptNode.src) {
+          newScript.src = scriptNode.src;
+        } else {
+          newScript.textContent = scriptNode.textContent;
+        }
+        
         target.appendChild(newScript);
-      } else {
+      } 
+      // Handle Styles specifically
+      else if (node.nodeName === 'STYLE') {
+        const styleNode = node as HTMLStyleElement;
+        const newStyle = document.createElement('style');
+        newStyle.setAttribute('data-lazer-injected', 'true');
+        newStyle.textContent = styleNode.textContent;
+        target.appendChild(newStyle);
+      }
+      // Handle other elements (divs, links, etc)
+      else if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as HTMLElement;
+        const clone = element.cloneNode(true) as HTMLElement;
+        clone.setAttribute('data-lazer-injected', 'true');
+        target.appendChild(clone);
+      }
+      // Handle comments or text nodes directly
+      else {
         target.appendChild(node.cloneNode(true));
       }
     });
@@ -49,8 +88,10 @@ const PublicIntake: React.FC<PublicIntakeProps> = ({ forceSuccessView = false })
       const config = await getFormConfig();
       setFormConfig(config);
       logVisit(window.location.pathname + window.location.hash);
-      injectCode(config.headerCode, true);
-      injectCode(config.footerCode, false);
+      
+      // Inject user-defined code
+      if (config.headerCode) injectCode(config.headerCode, true);
+      if (config.footerCode) injectCode(config.footerCode, false);
     };
     initialize();
   }, []);
