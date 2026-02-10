@@ -10,7 +10,9 @@ const DEFAULT_CONFIG: FormConfig = {
   showProjectType: true,
   formTitle: 'Ready to build a system that actually works?',
   formSubtitle: 'Submit your project details today. Tell us what you need, and our team will review it, call you, and guide you from idea to execution.',
-  ctaText: 'Initiate My Project Engine'
+  ctaText: 'Initiate My Project Engine',
+  headerCode: '<!-- Custom Header Scripts -->',
+  footerCode: '<!-- Custom Footer Scripts -->'
 };
 
 export const getFormConfig = (): FormConfig => {

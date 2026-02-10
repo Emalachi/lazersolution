@@ -65,6 +65,8 @@ export interface FormConfig {
   formTitle: string;
   formSubtitle: string;
   ctaText: string;
+  headerCode?: string;
+  footerCode?: string;
 }
 
 export interface AuthUser {
