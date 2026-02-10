@@ -22,6 +22,34 @@ const PublicIntake: React.FC = () => {
     source: ''
   });
 
+  // Helper function to inject HTML and execute scripts
+  const injectCode = (html: string, isHeader: boolean) => {
+    if (!html || html.trim() === '' || html.startsWith('<!--')) return;
+    
+    const target = isHeader ? document.head : document.body;
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    Array.from(tempDiv.childNodes).forEach((node) => {
+      if (node.nodeName === 'SCRIPT') {
+        const scriptNode = node as HTMLScriptElement;
+        const newScript = document.createElement('script');
+        
+        // Copy all attributes
+        Array.from(scriptNode.attributes).forEach(attr => {
+          newScript.setAttribute(attr.name, attr.value);
+        });
+        
+        // Copy inner script content
+        newScript.appendChild(document.createTextNode(scriptNode.innerHTML));
+        target.appendChild(newScript);
+      } else {
+        // For non-script nodes (styles, links, html), just append
+        target.appendChild(node.cloneNode(true));
+      }
+    });
+  };
+
   useEffect(() => {
     const config = getFormConfig();
     setFormConfig(config);
@@ -29,19 +57,9 @@ const PublicIntake: React.FC = () => {
     // Analytics: Log initial visit
     logVisit(window.location.pathname + window.location.hash);
 
-    // Inject custom header code
-    if (config.headerCode && config.headerCode !== '<!-- Custom Header Scripts -->') {
-      const range = document.createRange();
-      const fragment = range.createContextualFragment(config.headerCode);
-      document.head.appendChild(fragment);
-    }
-
-    // Inject custom footer code
-    if (config.footerCode && config.footerCode !== '<!-- Custom Footer Scripts -->') {
-      const range = document.createRange();
-      const fragment = range.createContextualFragment(config.footerCode);
-      document.body.appendChild(fragment);
-    }
+    // Inject custom header and footer code correctly
+    injectCode(config.headerCode, true);
+    injectCode(config.footerCode, false);
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -64,7 +82,7 @@ const PublicIntake: React.FC = () => {
       }
     } catch (err) {
       setLoading(false);
-      alert('Error submitting form. Please try again.');
+      alert('Error submitting form. Please check your connection and try again.');
     }
   };
 
