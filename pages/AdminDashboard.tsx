@@ -1,9 +1,9 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Lead } from '../types';
-import { getLeads } from '../services/leadService';
-import LeadTable from '../components/LeadTable';
-import LeadDetails from './LeadDetails';
+import { Lead } from '../types.ts';
+import { getLeads } from '../services/leadService.ts';
+import LeadTable from '../components/LeadTable.tsx';
+import LeadDetails from './LeadDetails.tsx';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 interface AdminDashboardProps {

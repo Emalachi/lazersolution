@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
-import AdminDashboard from './pages/AdminDashboard';
-import PublicIntake from './pages/PublicIntake';
-import Login from './pages/Login';
+import Sidebar from './components/Sidebar.tsx';
+import AdminDashboard from './pages/AdminDashboard.tsx';
+import PublicIntake from './pages/PublicIntake.tsx';
+import Login from './pages/Login.tsx';
 
 type AppMode = 'public' | 'admin';
 type AdminView = 'dashboard' | 'leads';

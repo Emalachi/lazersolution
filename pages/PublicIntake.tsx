@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { addLead } from '../services/leadService';
-import { PROJECT_TYPES, BUDGET_RANGES, TIMELINES } from '../constants';
-import { ProjectType, BudgetRange, Timeline } from '../types';
+import { addLead } from '../services/leadService.ts';
+import { PROJECT_TYPES, BUDGET_RANGES, TIMELINES } from '../constants.tsx';
+import { ProjectType, BudgetRange, Timeline } from '../types.ts';
 
 const PublicIntake: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);

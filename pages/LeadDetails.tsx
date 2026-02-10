@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Lead, LeadStatus } from '../types';
-import { LEAD_STATUSES, STATUS_COLORS } from '../constants';
-import { updateLead, addNote, logActivity } from '../services/leadService';
+import { Lead, LeadStatus } from '../types.ts';
+import { LEAD_STATUSES, STATUS_COLORS } from '../constants.tsx';
+import { updateLead, addNote, logActivity } from '../services/leadService.ts';
 
 interface LeadDetailsProps {
   lead: Lead;
