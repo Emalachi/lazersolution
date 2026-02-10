@@ -57,6 +57,16 @@ export interface Lead {
   tags: string[];
 }
 
+export interface FormConfig {
+  showCompanyName: boolean;
+  showBudget: boolean;
+  showTimeline: boolean;
+  showProjectType: boolean;
+  formTitle: string;
+  formSubtitle: string;
+  ctaText: string;
+}
+
 export interface AuthUser {
   id: string;
   name: string;

@@ -6,12 +6,13 @@ import PublicIntake from './pages/PublicIntake.tsx';
 import Login from './pages/Login.tsx';
 
 type AppMode = 'public' | 'admin';
-type AdminView = 'dashboard' | 'leads';
+type AdminView = 'dashboard' | 'leads' | 'settings';
 
 const App: React.FC = () => {
   const [mode, setMode] = useState<AppMode>('public');
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [activeAdminView, setActiveAdminView] = useState<AdminView>('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Simple routing based on URL hash
   useEffect(() => {
@@ -42,11 +43,23 @@ const App: React.FC = () => {
         activeView={activeAdminView} 
         onNavigate={setActiveAdminView} 
         onLogout={() => setIsAdminAuthenticated(false)} 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
-      <main className="flex-1 ml-64 min-h-screen">
-        <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-          <div className="text-sm font-semibold text-slate-400">
-            Internal CRM / <span className="text-slate-900 capitalize">{activeAdminView}</span>
+      <main className="flex-1 lg:ml-64 min-h-screen">
+        <header className="h-16 bg-white border-b border-slate-200 px-4 lg:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-2 text-slate-500 hover:bg-slate-50 rounded-lg"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div className="text-sm font-semibold text-slate-400 hidden sm:block">
+              Internal CRM / <span className="text-slate-900 capitalize">{activeAdminView}</span>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <button className="text-slate-400 hover:text-indigo-600 transition-colors p-2 rounded-xl hover:bg-slate-50">
@@ -69,7 +82,7 @@ const App: React.FC = () => {
       </main>
       
       {/* Demo Switcher Toggle */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-40">
         <button 
           onClick={() => {
             const newMode = mode === 'public' ? 'admin' : 'public';
@@ -80,7 +93,7 @@ const App: React.FC = () => {
           <svg className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
           </svg>
-          <span>Switch to {mode === 'public' ? 'Admin Portal' : 'Public Site'}</span>
+          <span className="hidden sm:inline">Switch to {mode === 'public' ? 'Admin Portal' : 'Public Site'}</span>
         </button>
       </div>
     </div>
